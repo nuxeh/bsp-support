@@ -1,0 +1,4 @@
+setenv bootargs "console=ttyS0,${baudrate}n8r rw init=/sbin/init rootfstype=btrfs rootflags=subvol=systems/default/run root=/dev/sda2"
+load scsi 0 ${kernel_addr_r} /systems/default/kernel
+load scsi 0 ${fdt_addr_r} /systems/default/dtb
+bootm ${kernel_addr_r} - ${fdt_addr_r}
