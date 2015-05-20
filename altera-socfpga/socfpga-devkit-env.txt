@@ -1,0 +1,57 @@
+baudrate=115200
+bootargs=console=ttyS0,115200 root=/dev/mmcblk0p2 rw rootwait
+bootcmd=run fpgaload; run bridge_enable_handoff; run callscript; run mmcload; run mmcboot
+bootdelay=5
+bootimage=zImage
+bootimagesize=0x600000
+bridge_disable=mw $fpgaintf 0; mw $fpga2sdram 0; go $fpga2sdram_apply; mw $axibridge 0; mw $l3remap 0x1
+bridge_enable_handoff=mw $fpgaintf ${fpgaintf_handoff}; go $fpga2sdram_apply; mw $fpga2sdram ${fpga2sdram_handoff}; mw $axibridge ${axibridge_handoff}; mw $l3remap ${l3remap_handoff}
+callscript=if fatload mmc 0:1 $fpgadata $scriptfile;then source $fpgadata; else echo Optional boot script not found. Continuing to boot normally; fi;
+ethact=mii0
+ethaddr=00:07:ed:26:09:63
+fdtaddr=0x00000100
+fdtimage=socfpga-devkit.dtb
+fdtimagesize=0x7000
+filesize=0x6aebd0
+fpga=0
+fpga2sdram=ffc25080
+fpga2sdram_apply=3ff79550
+fpga2sdram_handoff=0x00000311
+fpgadata=0x2000000
+fpgadatasize=0x700000
+fpgafilename=custom.rbf
+fpgaintf=ffd08028
+fpgaintf_handoff=0x00000000
+fpgaload=fatload mmc 0:1 ${fpgadata} ${fpgafilename}; fpga load 0 ${fpgadata} ${filesize}
+ipaddr=192.168.42.2
+l3remap=ff800000
+l3remap_handoff=0x00000019
+loadaddr=0x8000
+micrel-ksz9021-clk-skew=0xf0f0
+micrel-ksz9021-data-skew=0x0
+mmcboot=setenv bootargs console=ttyS0,115200 root=${mmcroot} rootfstype=btrfs rootflags=subvol=systems/factory/run rw rootwait;bootz ${loadaddr} - ${fdtaddr}
+mmcload=mmc rescan;${mmcloadcmd} mmc 0:${mmcloadpart} ${loadaddr} ${bootimage};${mmcloadcmd} mmc 0:${mmcloadpart} ${fdtaddr} ${fdtimage}
+mmcloadcmd=fatload
+mmcloadpart=1
+mmcroot=/dev/mmcblk0p2
+nandboot=setenv bootargs console=ttyS0,115200 root=${nandroot} rw rootfstype=${nandrootfstype};bootz ${loadaddr} - ${fdtaddr}
+nandbootimageaddr=0x120000
+nandfdtaddr=0xA0000
+nandload=nand read ${loadaddr} ${nandbootimageaddr} ${bootimagesize};nand read ${fdtaddr} ${nandfdtaddr} ${fdtimagesize}
+nandroot=/dev/mtdblock1
+nandrootfstype=jffs2
+netboot=dhcp ${bootimage} ; tftp ${fdtaddr} ${fdtimage} ; run ramboot
+qspiboot=setenv bootargs console=ttyS0,115200 root=${qspiroot} rw rootfstype=${qspirootfstype};bootz ${loadaddr} - ${fdtaddr}
+qspibootimageaddr=0xa0000
+qspifdtaddr=0x50000
+qspiload=sf probe ${qspiloadcs};sf read ${loadaddr} ${qspibootimageaddr} ${bootimagesize};sf read ${fdtaddr} ${qspifdtaddr} ${fdtimagesize};
+qspiloadcs=0
+qspiroot=/dev/mtdblock1
+qspirootfstype=jffs2
+ramboot=setenv bootargs console=ttyS0,115200;bootz ${loadaddr} - ${fdtaddr}
+scriptfile=u-boot.scr
+setenv_ethaddr_eeprom=3ff9abe9
+stderr=serial
+stdin=serial
+stdout=serial
+verify=n
