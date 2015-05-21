@@ -1,0 +1,157 @@
+# Introduction
+==============
+
+These files are used as part of the BSP for Altera SoCFPGA development kit
+Baserock system builds.
+
+This repository contains files used to build a U-Boot SPL preloader, which
+falls between a hardcoded ROM bootloader and U-Boot in the boot process of an
+Altera SoCFPGA SoC. This document details how to generate the required files
+using Altera tools. The resulting files are used to build with U-Boot source
+to produce the preloader binary used in the Baserock build. The files contain
+headers which critically provide details of the hardware associated with the
+SoC on the board, particularly RAM timings.
+
+This repository also contains files which are used to support the BSP and
+booting of the board. One is the U-Boot environment, which is compiled during
+the build.
+
+Contained in this repo are generated files which are a bare example for the
+Altera Cyclone V SoCFPGA development kit. If a design requires changes to the
+SoC configuration, to expose interfaces to the FPGA for example, it is likely
+you will have to update the device tree.
+
+
+## Pre-requisites
+=================
+
+To generate the files needed to build a preloader for the SoCFPGA device,
+a number of software tools are required:
+
+- Quartus (Web edition)
+    https://www.altera.com/products/design-software/fpga-design/quartus-ii/quartus-ii-web-edition.html
+- Altera SoC EDS (SoC embedded design suite)
+    https://www.altera.com/products/design-software/embedded-software-developers/soc-eds/overview.html
+
+Both tools are free to download.
+
+Three things are required, and can be generated using the above tools:
+1. Hardware handoff files
+2. Board support package - used to build preloader and Das U-Boot,
+   including RAM timings
+3. Device tree source
+
+
+# Files in this repository:
+===========================
+.
+├── dts-generated
+│   └── socfpga-devkit.dts                 - The auto-generated DTS
+├── example                                - Files needed to recreate a
+│   ├── constrain_clocks.sdc                 Quartus project to re-generate
+│   └── hps.qsys                             the support files below
+├── hardware-handoff                       - Auto-generated support files
+│   ├── hps_hps_0                            * Hardware handoff - replace
+│   │   ├── alt_types.h                        this for new designs, see 1
+│   │   ├── emif.xml
+│   │   ├── hps_hps_0.hiof
+│   │   ├── hps.xml
+│   │   ├── id
+│   │   ├── sdram_io.h
+│   │   ├── sequencer_auto_ac_init.c
+│   │   ├── sequencer_auto.h
+│   │   ├── sequencer_auto_inst_init.c
+│   │   ├── sequencer.c
+│   │   ├── sequencer_defines.h
+│   │   ├── sequencer.h
+│   │   ├── system.h
+│   │   ├── tclrpt.c
+│   │   └── tclrpt.h
+│   └── spl_bsp                              * BSP - replace this for new
+│       ├── generated                          designs, see 2
+│       │   ├── build.h
+│       │   ├── iocsr_config_cyclone5.c
+│       │   ├── iocsr_config_cyclone5.h
+│       │   ├── pinmux_config_cyclone5.c
+│       │   ├── pinmux_config.h
+│       │   ├── pll_config.h
+│       │   ├── reset_config.h
+│       │   └── sdram
+│       │       └── sdram_config.h
+│       ├── Makefile
+│       ├── preloader.ds
+│       ├── settings.bsp
+│       └── uboot.ds
+├── patches                                - Patches applied before build
+│   ├── ecc-off.diff                         * Disable ECC
+│   ├── nomkpimage.diff                      * We use U-Boot's mkimage
+│   └── no-untar.diff                        * Do not use tarballed source
+├── README                                 - This README
+└── socfpga-devkit-env.txt                 - U-Boot environment
+
+
+# 1. Hardware handoff files (hps_hps_0)
+=======================================
+
+To generate the hardware handoff files:
+
+* Create a new Quartus project with device 5CSXFC6D6F31C8ES (New Project
+  Wizard)
+* Add hps.qsys to the project folder and add the file to the project
+* Open the hps.qsys in Qsys, and click 'Generate HDL...' (there will be one
+  warning)
+    - The provided Qsys file contains a minimal SoC setup, with SDRAM timings
+      for the board, etc.
+    - Once this is complete, the DTS can be generated (see below)
+* Close Qsys, set hps.qsys as the top-level entity, run
+  Processing > Start > Analysis and Synthesis (Ctrl-K)
+* Run DDR pin assignment script:
+  Tools -> TCL Scripts... -> hps_sdram_p0_pin_assignments.tcl
+* Open Pin Planner, assign:
+    clk_clk        AC18  1.5v
+    reset_reset_n  AD27  2.5v
+* Add constrain_clocks.sdc to project
+* Start compilation
+* Once compilation has completed, the directory `hps_hps_0` is generated
+  as `hps_isw_handoff/hps_hps_0/` in the project directory root. Copy the
+  `hps_hps_0` folder and its contents to the `hardware-handoff` folder in
+  this repository
+
+
+# 2. BSP support files (spl_bsp)
+================================
+
+To generate the BSP files required to build the preloader:
+
+* Start the bsp-editor tool from SoC EDS:
+
+      $ /opt/altera/15.0/embedded/embedded_command_shell.sh
+      $ bsp-editor
+
+* Create a new HPS BSP (New -> New HPS BSP)
+* Choose the `hps_hps_0` folder as Preloader Settings Directory
+* Click generate, and close
+* At this point, the `software/spl_bsp/` folder has been generated, containing
+  the BSP support files. Copy `spl_bsp` directory and its contents into the
+  `hardware-handoff` directory in this repository
+
+
+# 3. Device tree source
+=======================
+
+To generate the device tree:
+
+* A sopcinfo file is obtained after 'Generate HDL' has been run from Qsys,
+  see section 1, above. This is used to generate a DTS:
+
+      $ /opt/altera/15.0/embedded/embedded_command_shell.sh
+      $ sopc2dts --input hps.sopcinfo \
+                 --output socfpga-devkit.dts \
+                 --type dts \
+                 --board /opt/altera/15.0/embedded/examples/hardware/cv_soc_devkit_ghrd/soc_system_board_info.xml \
+                 --board /opt/altera/15.0/embedded/examples/hardware/cv_soc_devkit_ghrd/hps_common_board_info.xml \
+                 --bridge-removal all --clocks
+
+* Copy `socfpga-devkit.dts` to the file to the `dts-generated` directory in
+  this repository
+
