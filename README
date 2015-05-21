@@ -1,0 +1,35 @@
+- Documentation on building the dts
+
+    sopc2dts --input hps.sopcinfo \
+             --output rocketboard.dts \
+             --type dts \
+             --board /opt/altera/15.0/embedded/examples/hardware/cv_soc_devkit_ghrd/soc_system_board_info.xml \
+             --board /opt/altera/15.0/embedded/examples/hardware/cv_soc_devkit_ghrd/hps_common_board_info.xml \
+             --bridge-removal all --clocks
+
+This is part of the <altera embedded thingy>
+
+- Documentation on generating the handoff files
+
+If you change the SoC configuration, adding new hardware to communicate with the FPGA, you will likely have to re-generate these files, using the sopcinfo file, and the bsp generator, and replace the spl_bsp folder in this repo.
+
+.
+├── dts-generated
+│   └── socfpga-devkit.dts
+├── hardware-handoff
+│   └── spl_bsp
+│       ├── generated
+│       │   ├── build.h
+│       │   ├── iocsr_config_cyclone5.c
+│       │   ├── iocsr_config_cyclone5.h
+│       │   ├── pinmux_config_cyclone5.c
+│       │   ├── pinmux_config.h
+│       │   ├── pll_config.h
+│       │   ├── reset_config.h
+│       │   └── sdram
+│       │       └── sdram_config.h
+│       ├── Makefile
+│       ├── settings.bsp
+│       └── uboot-socfpga
+├── README
+└── socfpga-devkit-env.txt
