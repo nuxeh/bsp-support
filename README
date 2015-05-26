@@ -12,16 +12,47 @@ a number of software tools are required:
 
 Both tools are free to download.
 
-Three things are required, and can be generated using these tools:
+Three things are required, and can be generated using the above tools:
 1. Device tree source
-2. Board support package
+2. Board support package - used to build preloader and Das U-Boot
 3. Hardware handoff files
+
+Files in this repository:
+* hps.qsys - example Qsys file with configuration for this board
+* Patches/ - patches applied to the pregenerated source files at build time
+
+To generate the SoC support files:
+* Create a new Quartus project with device 5CSXFC6D6F31C8ES (New Project Wizard)
+* Add hps.qsys to the project folder and add the file to the project
+* Open the hps.qsys in Qsys, and click 'Generate HDL...' (there will be one warning)
+    - This file contains a minimal SoC setup, with SDRAM timings for the board, etc.
+* Close Qsys, set hps.qsys as the top-level entity, run Processing > Start > Analysis and Synthesis (Ctrl-K)
+* Run DDR pin assignment script: Tools > TCL Scripts... > hps_sdram_p0_pin_assignments.tcl
+* Open Pin Planner, assign:
+    clk_clk        AC18  1.5v
+    reset_reset_n  AD27  2.5v
+* Add constrain_clocks.sdc to project
+* Start compilation
+* Once compilation has completed, the hps_isw_handoff/hps_hps_0/ handoff folder is generated. Copy this to the hardware-handoff folder in this repository
+
+To generate BSP files:
+* Start the bsp-editor tool from SoC EDS:
+    /opt/altera/15.0/embedded/embedded_command_shell.sh
+    bsp-editor
+* Create a new HPS BSP
+* Choose the hps_hps_0 folder as Preloader Settings Directory
+* Click generate and close
+* At this point, the software/spl_bsp/ folder has been generated, containing the BSP support files. Copy this to the hardware-handoff folder in this repository
+ 
+To generate the device tree
+
+Copy this file to the dts-generated foler in this repository
 
 1. Building the dts
 
       /opt/altera/15.0/embedded/embedded_command_shell.sh
       sopc2dts --input hps.sopcinfo \
-               --output rocketboard.dts \
+               --output socfpga-devkit.dts \
                --type dts \
                --board /opt/altera/15.0/embedded/examples/hardware/cv_soc_devkit_ghrd/soc_system_board_info.xml \
                --board /opt/altera/15.0/embedded/examples/hardware/cv_soc_devkit_ghrd/hps_common_board_info.xml \
