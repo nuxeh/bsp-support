@@ -1,0 +1,13 @@
+diff --git a/hardware-handoff/spl_bsp/generated/build.h b/hardware-handoff/spl_bsp/generated/build.h
+index 3ed7e6c..2203d08 100644
+--- a/hardware-handoff/spl_bsp/generated/build.h
++++ b/hardware-handoff/spl_bsp/generated/build.h
+@@ -147,7 +147,7 @@
+ /*
+  * To configure whether to scrub the SDRAM to initialize the ECC bits
+  */
+-#define CONFIG_PRELOADER_SDRAM_SCRUBBING    (0)
++#define CONFIG_PRELOADER_SDRAM_SCRUBBING    (1)
+ 
+ /* To configure whether to scrub the SDRAM to initialize the ECC bits */
+ #if (CONFIG_PRELOADER_SDRAM_SCRUBBING == 1)
