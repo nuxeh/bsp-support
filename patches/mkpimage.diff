@@ -1,0 +1,14 @@
+diff --git a/hardware-handoff/spl_bsp/Makefile b/hardware-handoff/spl_bsp/Makefile
+index ec12f34..b741a77 100644
+--- a/hardware-handoff/spl_bsp/Makefile
++++ b/hardware-handoff/spl_bsp/Makefile
+@@ -190,7 +188,7 @@ $(PRELOADER.BINARY): $(CONFIG)
+ mkpimage-spl: $(PRELOADER.MKPIMAGE_BINARY)
+ 
+ $(PRELOADER.MKPIMAGE_BINARY): $(PRELOADER.BINARY)
+-	mkpimage --header-version 0 -o $@ $< $< $< $<
++	mkpimage -o $@ $< $< $< $<
+ 
+ .PHONY: tools
+ tools: $(CONFIG)
+
