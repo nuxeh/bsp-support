@@ -1,7 +1,5 @@
-diff --git a/hardware-handoff/spl_bsp/Makefile b/hardware-handoff/spl_bsp/Makefile
-index ec12f34..b741a77 100644
---- a/hardware-handoff/spl_bsp/Makefile
-+++ b/hardware-handoff/spl_bsp/Makefile
+--- hardware-handoff/spl_bsp/Makefile
++++ hardware-handoff/spl_bsp/Makefile
 @@ -72,11 +72,9 @@ define stamp
  endef
  
@@ -23,7 +21,7 @@ index ec12f34..b741a77 100644
  	@$(RM) $(PRELOADER_SRC_DIR)
  	$(untar_recipe)
  	@$(CHMOD) -R 755 $(PRELOADER_SRC_DIR)
-@@ -237,7 +235,7 @@ $(UPDATE_GENERATED_SOURCE_FILES): $(PRELOADER_UPDATE_DIR)/%: generated/% $(UNTAR
+@@ -237,7 +235,7 @@ $(UPDATE_GENERATED_SOURCE_FILES): $(PREL
  .PHONY: config
  config: $(CONFIG)
  
