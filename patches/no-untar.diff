@@ -14,15 +14,6 @@ index ec12f34..b741a77 100644
  CONFIG := $(STAMP_DIR)/.config
  PATCH_APPLY := $(STAMP_DIR)/.patch
  
-@@ -190,7 +188,7 @@ $(PRELOADER.BINARY): $(CONFIG)
- mkpimage-spl: $(PRELOADER.MKPIMAGE_BINARY)
- 
- $(PRELOADER.MKPIMAGE_BINARY): $(PRELOADER.BINARY)
--	mkpimage --header-version 0 -o $@ $< $< $< $<
-+	mkpimage -o $@ $< $< $< $<
- 
- .PHONY: tools
- tools: $(CONFIG)
 @@ -211,7 +209,7 @@ tools: $(CONFIG)
  .PHONY: src
  src: $(UNTAR_SRC)
