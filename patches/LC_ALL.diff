@@ -1,0 +1,19 @@
+diff --git a/hardware-handoff/spl_bsp/Makefile b/hardware-handoff/spl_bsp/Makefile
+index ec12f34..8a3ca2d 100644
+--- a/hardware-handoff/spl_bsp/Makefile
++++ b/hardware-handoff/spl_bsp/Makefile
+@@ -7,6 +7,14 @@
+ #
+ ###############################################################################
+ 
++# Avoid funny character set dependencies
++unexport LC_ALL
++LC_COLLATE=C
++LC_NUMERIC=C
++export LC_COLLATE LC_NUMERIC
++
++# http://git.denx.de/?p=u-boot.git;a=blob;f=Makefile;h=ddea53485a1e016ec80e8e4dc5a526a72fada41d;hb=HEAD#l17
++# http://lists.denx.de/pipermail/u-boot/2012-December/141441.html
+ 
+ ###############################################################################
+ #
