@@ -7,7 +7,7 @@ index ec12f34..b741a77 100644
  
  $(PRELOADER.MKPIMAGE_BINARY): $(PRELOADER.BINARY)
 -	mkpimage --header-version 0 -o $@ $< $< $< $<
-+	mkpimage -o $@ $< $< $< $<
++	mkimage -T socfpgaimage -d $< $@
  
  .PHONY: tools
  tools: $(CONFIG)
