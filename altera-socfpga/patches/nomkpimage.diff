@@ -1,0 +1,13 @@
+diff --git a/hardware-handoff/spl_bsp/Makefile b/hardware-handoff/spl_bsp/Makefile
+index ef5a4a0..f558337 100644
+--- a/hardware-handoff/spl_bsp/Makefile
++++ b/hardware-handoff/spl_bsp/Makefile
+@@ -173,7 +173,7 @@ PRELOADER.MKPIMAGE_BINARY := preloader-mkpimage.bin
+ UBOOT.BINARY := $(PRELOADER_SRC_DIR)/u-boot.bin
+ 
+ .PHONY: all
+-all: spl mkpimage-spl
++all: spl
+ 
+ .PHONY: uboot
+ uboot: $(UBOOT.BINARY)
